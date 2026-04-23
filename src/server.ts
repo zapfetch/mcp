@@ -42,7 +42,7 @@ export function buildServer(config: Config): McpServer {
     version: "0.1.0",
   });
 
-  const wrap = <A extends Record<string, unknown>>(
+  const wrap = <A>(
     fn: (c: ZapFetchClient, args: A) => Promise<unknown>,
   ) =>
     async (args: A) => {
@@ -73,43 +73,43 @@ export function buildServer(config: Config): McpServer {
   server.registerTool(
     "zapfetch_scrape",
     { description: scrapeDescription, inputSchema: scrapeInputSchema },
-    wrap(scrape as (c: ZapFetchClient, args: Record<string, unknown>) => Promise<unknown>),
+    wrap(scrape),
   );
 
   server.registerTool(
     "zapfetch_search",
     { description: searchDescription, inputSchema: searchInputSchema },
-    wrap(search as (c: ZapFetchClient, args: Record<string, unknown>) => Promise<unknown>),
+    wrap(search),
   );
 
   server.registerTool(
     "zapfetch_crawl",
     { description: crawlDescription, inputSchema: crawlInputSchema },
-    wrap(crawl as (c: ZapFetchClient, args: Record<string, unknown>) => Promise<unknown>),
+    wrap(crawl),
   );
 
   server.registerTool(
     "zapfetch_crawl_status",
     { description: crawlStatusDescription, inputSchema: crawlStatusInputSchema },
-    wrap(crawlStatus as (c: ZapFetchClient, args: Record<string, unknown>) => Promise<unknown>),
+    wrap(crawlStatus),
   );
 
   server.registerTool(
     "zapfetch_map",
     { description: mapDescription, inputSchema: mapInputSchema },
-    wrap(map as (c: ZapFetchClient, args: Record<string, unknown>) => Promise<unknown>),
+    wrap(map),
   );
 
   server.registerTool(
     "zapfetch_extract",
     { description: extractDescription, inputSchema: extractInputSchema },
-    wrap(extract as (c: ZapFetchClient, args: Record<string, unknown>) => Promise<unknown>),
+    wrap(extract),
   );
 
   server.registerTool(
     "zapfetch_extract_status",
     { description: extractStatusDescription, inputSchema: extractStatusInputSchema },
-    wrap(extractStatus as (c: ZapFetchClient, args: Record<string, unknown>) => Promise<unknown>),
+    wrap(extractStatus),
   );
 
   return server;

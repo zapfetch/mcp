@@ -18,12 +18,7 @@ export const searchDescription =
   "Search the web and optionally scrape results. Use this when the user wants to find information across multiple sites — like a programmable Google. " +
   "Returns structured list of result URLs with titles and snippets. Use zapfetch_scrape to fetch full content of a specific result.";
 
-type SearchArgs = {
-  query: string;
-  limit?: number;
-  tbs?: string;
-  location?: string;
-};
+type SearchArgs = z.infer<z.ZodObject<typeof searchInputSchema>>;
 
 export async function search(client: ZapFetchClient, args: SearchArgs) {
   const resp = await client.post<{ data?: unknown } | unknown>("/v2/search", args);
