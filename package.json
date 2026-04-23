@@ -1,0 +1,48 @@
+{
+  "name": "@zapfetch/mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server for ZapFetch - APAC-native web scraping API for AI agents",
+  "type": "module",
+  "bin": {
+    "zapfetch-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --import tsx 'src/**/*.test.ts'"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "zapfetch",
+    "web-scraping",
+    "scraping",
+    "crawl",
+    "ai-agents"
+  ],
+  "author": "ZapFetch",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zapfetch/mcp.git"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

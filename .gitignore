@@ -1,0 +1,22 @@
+node_modules/
+dist/
+*.tsbuildinfo
+
+# Env
+.env
+.env.*
+
+# Editor
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+
+# OMC local state
+.omc/
+
+# Logs
+*.log
+npm-debug.log*
