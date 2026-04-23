@@ -90,12 +90,55 @@ Edit `~/.codeium/windsurf/mcp_config.json`:
 
 ## Usage Examples
 
-After configuration, just ask your AI assistant:
+After configuration, ask your AI assistant naturally — it will pick the right tool automatically.
 
-- "Scrape the top 3 posts from news.ycombinator.com/newest"
-- "Find me the latest TypeScript release notes on github.com"
-- "Crawl docs.example.com and summarize the authentication section"
-- "Extract product name, price, and stock from these 5 rakuten.co.jp URLs as JSON"
+### Scrape a single page
+
+> "Scrape https://rakuten.co.jp and give me the main content as markdown."
+
+Uses `zapfetch_scrape`. Best for a known URL where you want raw page content quickly. If the page is geo-blocked or returns sparse content, follow up with a search instead.
+
+### Search the web
+
+> "Find the top 5 recent blog posts about TypeScript 5.7 and summarize each one."
+
+Uses `zapfetch_search`. Returns ranked results with optional content extraction. Useful when you don't have a specific URL yet, or as a fallback when a direct scrape comes up empty.
+
+### Crawl a site (multi-page)
+
+> "Crawl https://docs.example.com starting from the root, up to 50 pages, and summarize the authentication section."
+
+Uses `zapfetch_crawl` to kick off an async job (returns a `job_id`), then `zapfetch_crawl_status` to poll until complete. The assistant handles the polling loop — you just wait for the result.
+
+**Tip:** For large sites, map first (see below) to identify which URLs are worth crawling before committing.
+
+### Map a site (URL discovery)
+
+> "List all URLs under https://docs.example.com/api so I can decide which pages to scrape."
+
+Uses `zapfetch_map`. Returns URLs only — no content fetched — so it's fast even on large sites. Pair with `zapfetch_scrape` to cherry-pick the pages you actually need:
+
+> "Map https://stripe.com/docs, then scrape the 3 pages most relevant to webhook setup."
+
+### Extract structured data
+
+> "Extract product name, price, currency, and stock status from these 5 rakuten.co.jp product URLs. Return as a JSON array."
+
+Uses `zapfetch_extract` with a prompt and optional JSON schema. The job is async — `zapfetch_extract_status` polls it to completion. Good for turning arbitrary product pages, job listings, or articles into structured records at scale.
+
+### Poll extract job status
+
+> "Check whether the extract job job_abc123 is done."
+
+Uses `zapfetch_extract_status` directly. You rarely need to ask for this by name — the assistant calls it automatically after `zapfetch_extract` — but it's useful if you started a job in a previous session and want to retrieve results later.
+
+### Combining tools
+
+Tools compose naturally. A few common patterns:
+
+- **Survey then scrape:** map a large site to get all URLs, filter to the relevant ones, scrape each.
+- **Search then scrape:** search to find the canonical source for a topic, then scrape that page for full content.
+- **Scrape with fallback:** if `zapfetch_scrape` returns thin content (e.g. JS-heavy page), the assistant can fall back to `zapfetch_search` to find a cached or mirror version.
 
 ## Migrating from Firecrawl MCP
 
