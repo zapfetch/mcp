@@ -1,6 +1,6 @@
 {
   "name": "@zapfetchdev/mcp-server",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "MCP server for ZapFetch - APAC-native web scraping API for AI agents",
   "type": "module",
   "bin": {

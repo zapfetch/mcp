@@ -4,6 +4,7 @@ import type { AddressInfo } from "node:net";
 import { after, before, beforeEach, describe, test } from "node:test";
 
 import { ZapFetchClient, ZapFetchError } from "./client.js";
+import { VERSION } from "./version.js";
 
 describe("ZapFetchClient", () => {
   let server: Server;
@@ -62,7 +63,9 @@ describe("ZapFetchClient", () => {
     assert.equal(lastPath, "/v2/scrape");
     assert.ok(lastBody);
     assert.equal(lastBody.url, "https://example.com");
-    assert.equal(lastBody.origin, "mcp/zapfetch@0.1.0");
+    // Origin tag is dynamic from package.json; assert against the
+    // imported VERSION so a version bump doesn't regress this test.
+    assert.equal(lastBody.origin, `mcp/zapfetch@${VERSION}`);
   });
 
   test("POST preserves caller-provided origin if already set", async () => {
