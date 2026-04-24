@@ -2,6 +2,14 @@ import type { Config } from "./config.js";
 
 const USER_AGENT = "zapfetch-mcp/0.1.0";
 
+// ORIGIN_TAG marks requests originating from this MCP server. The ZapFetch
+// backend's compat layer (and upstream Firecrawl) both check whether the
+// request body's `origin` field contains "mcp", which lets billingHints
+// split usage into "from MCP client" vs "from direct API/SDK" without any
+// extra header plumbing. Keep the "mcp/" prefix — that substring is the
+// signal the backend looks for.
+const ORIGIN_TAG = "mcp/zapfetch@0.1.0";
+
 export class ZapFetchError extends Error {
   constructor(
     message: string,
@@ -17,7 +25,7 @@ export class ZapFetchClient {
   constructor(private readonly config: Config) {}
 
   async post<T = unknown>(path: string, body: unknown): Promise<T> {
-    return this.request<T>("POST", path, body);
+    return this.request<T>("POST", path, withOrigin(body));
   }
 
   async get<T = unknown>(path: string): Promise<T> {
@@ -62,4 +70,19 @@ export class ZapFetchClient {
     if (!text) return {} as T;
     return JSON.parse(text) as T;
   }
+}
+
+// withOrigin stamps ORIGIN_TAG onto a JSON-object request body so backend
+// telemetry can attribute the call to this MCP server. Callers that already
+// set `origin` (e.g. integrations layered on top of us) keep their value;
+// non-object bodies (arrays, primitives, null) pass through untouched.
+function withOrigin(body: unknown): unknown {
+  if (body === null || typeof body !== "object" || Array.isArray(body)) {
+    return body;
+  }
+  const record = body as Record<string, unknown>;
+  if (typeof record.origin === "string" && record.origin.length > 0) {
+    return body;
+  }
+  return { ...record, origin: ORIGIN_TAG };
 }
