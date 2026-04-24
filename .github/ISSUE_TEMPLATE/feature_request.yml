@@ -1,0 +1,59 @@
+name: Feature request
+description: Suggest a capability, tool, or integration
+title: "[feat] "
+labels: ["enhancement", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement. Before you continue:
+
+        - This repo is a **thin MCP wrapper** around the ZapFetch API.
+          If your request is "ZapFetch should do X", that belongs on
+          the ZapFetch support channel, not here.
+        - If you want a new MCP **tool**, check that ZapFetch already
+          has the underlying API first — we can't expose functionality
+          the upstream doesn't support.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem you're trying to solve
+      description: |
+        What are you trying to do that's awkward or impossible today?
+        Be specific — a concrete scenario helps a lot.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: |
+        A new tool? A new option on an existing tool? A deployment /
+        integration change? Describe the smallest version that would
+        solve the problem.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: |
+        Have you tried anything that almost works? Any workaround?
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - New tool
+        - Existing tool options
+        - HTTP transport
+        - STDIO transport
+        - Packaging / distribution (npm, Docker, Smithery, Registry)
+        - Docs
+        - Other
+    validations:
+      required: true
