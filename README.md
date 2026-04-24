@@ -81,12 +81,25 @@ Edit `~/.codeium/windsurf/mcp_config.json`:
 }
 ```
 
+## Install via Smithery
+
+For a one-command install that auto-writes the config for your MCP client:
+
+```bash
+npx -y @smithery/cli install @zapfetchdev/mcp-server --client claude
+# or --client cursor, --client windsurf
+```
+
+Smithery will prompt for your ZapFetch API key once, then register the server in the right config file for you. This invokes the package's STDIO entry (`bin.zapfetch-mcp` → `dist/index.js`) — identical to the manual configs above.
+
 ## Environment Variables
 
 | Variable            | Required | Default                   | Description                  |
 |---------------------|----------|---------------------------|------------------------------|
-| `ZAPFETCH_API_KEY`  | yes      | —                         | Your ZapFetch API key        |
+| `ZAPFETCH_API_KEY`  | STDIO    | —                         | Your ZapFetch API key (STDIO mode only — HTTP mode takes the key per-request via `Authorization: Bearer`) |
 | `ZAPFETCH_API_URL`  | no       | `https://api.zapfetch.com`| Override for self-host / dev |
+| `PORT`              | HTTP     | `3000`                    | HTTP server port (HTTP mode only) |
+| `ZAPFETCH_TRANSPORT`| Docker   | `stdio`                   | Inside the Docker image only, switches between `stdio` / `http` via `entry.sh`. Ignored by the `zapfetch-mcp` / `zapfetch-mcp-http` npm binaries. |
 
 ## Usage Examples
 
@@ -143,6 +156,51 @@ Tools compose naturally. A few common patterns:
 ## Migrating from Firecrawl MCP
 
 ZapFetch is Firecrawl-compatible at the API level, but this MCP uses `zapfetch_*` tool names (not `firecrawl_*`) to avoid conflicts if you run both. Capabilities are 1:1 — just update prompts referring to tool names.
+
+## HTTP transport (self-hosted)
+
+For hosted / multi-tenant deployments, run the HTTP server instead of STDIO. Each request carries its own API key via `Authorization: Bearer`, so a single deployment can serve many users without sharing credentials.
+
+### Docker
+
+```bash
+docker run -d \
+  -p 3000:3000 \
+  -e ZAPFETCH_TRANSPORT=http \
+  docker.io/zapfetchdev/mcp:latest
+```
+
+### From npm
+
+```bash
+npm install -g @zapfetchdev/mcp-server
+# then run the HTTP entry (never the STDIO one in this mode)
+zapfetch-mcp-http
+```
+
+### Endpoints
+
+| Path | Auth | Behavior |
+|------|------|----------|
+| `GET /health` | none | Returns `{ok:true, version, transport:"http"}`. Use for container health checks. |
+| `POST /mcp`   | `Authorization: Bearer <key>` required | MCP JSON-RPC endpoint. Requests MUST include `Accept: application/json, text/event-stream` per MCP spec. |
+
+### Example call
+
+```bash
+curl -X POST http://localhost:3000/mcp \
+  -H "Authorization: Bearer fc-YOUR-KEY" \
+  -H "Content-Type: application/json" \
+  -H "Accept: application/json, text/event-stream" \
+  -d '{"jsonrpc":"2.0","id":1,"method":"tools/list"}'
+```
+
+### Security notes
+
+- **Do not set `ZAPFETCH_API_KEY` in HTTP mode.** The server refuses to start (exit code 2) if the env var is present — this prevents a misconfigured container from silently serving every request from the operator's key.
+- The HTTP server is stateless: each request builds its own transport + client, with the Bearer token flowing to the MCP tool handler via the SDK's native `extra.authInfo.token` channel. No cross-request state, no session leaks.
+- Upstream ZapFetch API error strings are **sanitized** before transiting to HTTP clients — only a small allowlist of error codes (rate_limit, invalid_key, quota_exceeded, upstream_unavailable) passes through.
+- The stderr access log is strict-allowlist: only `ts / method / path / status / ms / origin_ip`. Bearer tokens, bodies, and headers are never logged.
 
 ## Development
 

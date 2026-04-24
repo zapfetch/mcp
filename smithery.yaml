@@ -1,0 +1,38 @@
+# Smithery installation manifest.
+#
+# When a user runs `npx @smithery/cli install @zapfetchdev/mcp-server --client claude`,
+# Smithery reads this file to know how to spawn the server on the user's
+# machine. We use `type: stdio` because the spawned process communicates
+# over stdin/stdout (not a hosted URL) — this matches Claude Desktop /
+# Cursor / Windsurf STDIO integrations.
+#
+# The `configSchema` defines what Smithery asks the user for; on success
+# it invokes `commandFunction(config)` and uses the returned command to
+# spawn the server with the user-provided apiKey in env.
+#
+# For HTTP hosted deployments via Smithery (remote URL pointer), a
+# separate `type: http` config is required — deferred to v0.3 alongside
+# a Smithery-managed HTTP endpoint.
+
+startCommand:
+  type: stdio
+  configSchema:
+    type: object
+    required:
+      - apiKey
+    properties:
+      apiKey:
+        type: string
+        title: "ZapFetch API key"
+        description: >-
+          Your ZapFetch API key. Get one at https://console.zapfetch.com.
+          Keys start with `fc-` and are sent to ZapFetch's upstream API
+          as a Bearer token.
+  commandFunction: |-
+    (config) => ({
+      command: "node",
+      args: ["dist/index.js"],
+      env: {
+        ZAPFETCH_API_KEY: config.apiKey
+      }
+    })

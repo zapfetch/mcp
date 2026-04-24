@@ -1,0 +1,52 @@
+name: Publish Docker
+
+# Triggers on semver tags alongside npm publish. Publishes two tags:
+#   docker.io/zapfetchdev/mcp:<version>  — immutable version pin
+#   docker.io/zapfetchdev/mcp:latest     — rolling pointer for "give me newest"
+#
+# Required repo secrets:
+#   - DOCKERHUB_USERNAME: the @zapfetchdev account username
+#   - DOCKERHUB_TOKEN: read-write PAT scoped to zapfetchdev/mcp
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Resolve image tags
+        id: tags
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tags=docker.io/zapfetchdev/mcp:$VERSION,docker.io/zapfetchdev/mcp:latest" >> $GITHUB_OUTPUT
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.tags.outputs.tags }}
+          # Build args and labels are already embedded in the Dockerfile
+          # (LABEL org.opencontainers.image.source / .description / .licenses)
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
