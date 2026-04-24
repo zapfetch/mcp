@@ -4,7 +4,8 @@
   "description": "MCP server for ZapFetch - APAC-native web scraping API for AI agents",
   "type": "module",
   "bin": {
-    "zapfetch-mcp": "dist/index.js"
+    "zapfetch-mcp": "dist/index.js",
+    "zapfetch-mcp-http": "dist/http-server.js"
   },
   "files": [
     "dist",
@@ -12,11 +13,15 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && chmod +x dist/index.js dist/http-server.js",
     "dev": "tsx watch src/index.ts",
+    "dev:http": "tsx watch src/http-server.ts",
     "start": "node dist/index.js",
+    "start:http": "node dist/http-server.js",
     "typecheck": "tsc --noEmit",
-    "test": "node --test --import tsx 'src/**/*.test.ts'"
+    "test": "node --test --import tsx 'src/**/*.test.ts'",
+    "assert:stdio-deps": "node scripts/assert-stdio-deps.mjs",
+    "prepublishOnly": "npm run build && npm run typecheck && npm test && npm run assert:stdio-deps"
   },
   "keywords": [
     "mcp",
@@ -29,16 +34,24 @@
   ],
   "author": "ZapFetch",
   "license": "MIT",
+  "homepage": "https://docs.zapfetch.com",
+  "bugs": {
+    "url": "https://github.com/zapfetch/mcp/issues"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/zapfetch/mcp.git"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "express": "^5.2.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^22.10.5",
+    "@types/supertest": "^7.2.0",
+    "supertest": "^7.2.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3"
   },

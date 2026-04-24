@@ -1,6 +1,7 @@
 import type { Config } from "./config.js";
+import { VERSION } from "./version.js";
 
-const USER_AGENT = "zapfetch-mcp/0.1.0";
+const USER_AGENT = `zapfetch-mcp/${VERSION}`;
 
 // ORIGIN_TAG marks requests originating from this MCP server. The ZapFetch
 // backend's compat layer (and upstream Firecrawl) both check whether the
@@ -8,7 +9,7 @@ const USER_AGENT = "zapfetch-mcp/0.1.0";
 // split usage into "from MCP client" vs "from direct API/SDK" without any
 // extra header plumbing. Keep the "mcp/" prefix — that substring is the
 // signal the backend looks for.
-const ORIGIN_TAG = "mcp/zapfetch@0.1.0";
+const ORIGIN_TAG = `mcp/zapfetch@${VERSION}`;
 
 export class ZapFetchError extends Error {
   constructor(
