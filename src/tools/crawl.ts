@@ -36,14 +36,7 @@ export const crawlDescription =
   "Returns a job_id for async polling. Long-running — consider asking the user before invoking if the site is large. " +
   "For a single page, use zapfetch_scrape. For URL discovery only (no content), use zapfetch_map.";
 
-type CrawlArgs = {
-  url: string;
-  limit?: number;
-  maxDiscoveryDepth?: number;
-  includePaths?: string[];
-  excludePaths?: string[];
-  crawlEntireDomain?: boolean;
-};
+type CrawlArgs = z.infer<z.ZodObject<typeof crawlInputSchema>>;
 
 // Start an async crawl and immediately return the job ID.
 // LLM can follow up with zapfetch_crawl_status to poll.

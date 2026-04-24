@@ -26,11 +26,7 @@ export const extractDescription =
   "Use this when the user wants JSON-shaped data (not markdown), especially across multiple pages with the same structure " +
   "(e.g. product listings, job postings, article metadata). Returns a job — poll with zapfetch_extract_status.";
 
-type ExtractArgs = {
-  urls: string[];
-  prompt: string;
-  schema?: Record<string, unknown>;
-};
+type ExtractArgs = z.infer<z.ZodObject<typeof extractInputSchema>>;
 
 export async function extract(client: ZapFetchClient, args: ExtractArgs) {
   const resp = await client.post<{ id?: string } | unknown>("/v2/extract", args);

@@ -19,12 +19,7 @@ export const mapDescription =
   "Returns list of URLs, optionally with titles/descriptions. Much cheaper than zapfetch_crawl (no content extraction). " +
   "Use zapfetch_scrape or zapfetch_crawl on specific URLs from the result.";
 
-type MapArgs = {
-  url: string;
-  search?: string;
-  limit?: number;
-  sitemap?: "include" | "skip" | "only";
-};
+type MapArgs = z.infer<z.ZodObject<typeof mapInputSchema>>;
 
 export async function map(client: ZapFetchClient, args: MapArgs) {
   const resp = await client.post<{ data?: unknown } | unknown>("/v2/map", args);

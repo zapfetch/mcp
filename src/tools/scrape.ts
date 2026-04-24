@@ -32,14 +32,7 @@ export const scrapeDescription =
   "Scrape a single web page. Use this when the user wants to extract the content of ONE specific URL. " +
   "Returns clean markdown (and other formats) of the page content. For crawling multiple URLs on a site, use zapfetch_crawl instead.";
 
-type ScrapeArgs = {
-  url: string;
-  formats?: ("markdown" | "html" | "rawHtml" | "links" | "screenshot")[];
-  onlyMainContent?: boolean;
-  waitFor?: number;
-  mobile?: boolean;
-  location?: { country: string; languages?: string[] };
-};
+type ScrapeArgs = z.infer<z.ZodObject<typeof scrapeInputSchema>>;
 
 export async function scrape(client: ZapFetchClient, args: ScrapeArgs) {
   const resp = await client.post<{ data?: unknown } | unknown>("/v2/scrape", args);
