@@ -29,5 +29,12 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Assert STDIO has no http-only deps
+        # Protects STDIO users (npx / Claude Desktop / Cursor / Windsurf)
+        # from paying express's 40+ transitive deps on cold start.
+        # `prepublishOnly` already gates this for publishes; running here
+        # surfaces regressions at PR time instead of at tag time.
+        run: npm run assert:stdio-deps
+
       - name: Test
         run: npm test
