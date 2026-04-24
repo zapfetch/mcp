@@ -1,0 +1,51 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.zapfetch/mcp-server",
+  "description": "APAC-native web scraping for AI agents — scrape / search / crawl / map / extract, with first-class Japanese / Korean / Chinese / Southeast-Asian site coverage.",
+  "repository": {
+    "url": "https://github.com/zapfetch/mcp",
+    "source": "github"
+  },
+  "version": "0.2.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@zapfetchdev/mcp-server",
+      "version": "0.2.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "ZAPFETCH_API_KEY",
+          "description": "ZapFetch API key (get one at https://console.zapfetch.com)",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "ZAPFETCH_API_URL",
+          "description": "Override the upstream API URL (defaults to https://api.zapfetch.com). For development / self-host.",
+          "isRequired": false,
+          "isSecret": false
+        }
+      ]
+    },
+    {
+      "registryType": "oci",
+      "identifier": "docker.io/zapfetchdev/mcp:0.2.0",
+      "transport": {
+        "type": "streamable-http",
+        "url": "http://localhost:{port}/mcp"
+      },
+      "packageArguments": [
+        {
+          "type": "named",
+          "name": "--port",
+          "description": "HTTP port to expose from the container",
+          "default": "3000"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+name: Publish npm
+
+# Triggers: pushing a semver tag (v1.2.3) OR manual dispatch from the
+# Actions tab. Manual dispatch is useful if a tag was pushed but the
+# workflow needed re-running after transient npm registry issues.
+#
+# Contract: this workflow is the ONLY path from source to npm. Local
+# `npm publish` should not be used once NPM_TOKEN is wired, so publish
+# history stays on GitHub Actions (auditable) rather than on a laptop.
+#
+# Required repo secrets:
+#   - NPM_TOKEN: automation token from https://www.npmjs.com/ (@zapfetchdev org)
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write  # enables npm provenance (future; safe to have now)
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type check
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Assert STDIO deps clean
+        run: npm run assert:stdio-deps
+
+      # prepublishOnly runs these again, but doing it explicitly here
+      # makes failures clearer in the Actions log than buried under npm.
+      - name: Build
+        run: npm run build
+
+      - name: Verify tag matches package version
+        run: |
+          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "FATAL: tag $GITHUB_REF_NAME does not match package.json version $PKG_VERSION"
+            exit 1
+          fi
+          echo "OK: tag and package.json version agree ($PKG_VERSION)"
+
+      - name: Publish to npm
+        run: npm publish --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
