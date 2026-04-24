@@ -1,4 +1,4 @@
-# @zapfetch/mcp-server
+# @zapfetchdev/mcp-server
 
 MCP (Model Context Protocol) server for [ZapFetch](https://zapfetch.com) — APAC-native web scraping API for AI agents.
 
@@ -26,7 +26,7 @@ For docs lookups, Claude/Cursor/Windsurf can also use the auto-generated Mintlif
 ## Install
 
 ```bash
-npm install -g @zapfetch/mcp-server
+npm install -g @zapfetchdev/mcp-server
 ```
 
 ## Configure
@@ -40,7 +40,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
   "mcpServers": {
     "zapfetch": {
       "command": "npx",
-      "args": ["-y", "@zapfetch/mcp-server"],
+      "args": ["-y", "@zapfetchdev/mcp-server"],
       "env": {
         "ZAPFETCH_API_KEY": "zf-your-api-key"
       }
@@ -58,7 +58,7 @@ Edit `~/.cursor/mcp.json`:
   "mcpServers": {
     "zapfetch": {
       "command": "npx",
-      "args": ["-y", "@zapfetch/mcp-server"],
+      "args": ["-y", "@zapfetchdev/mcp-server"],
       "env": { "ZAPFETCH_API_KEY": "zf-your-api-key" }
     }
   }
@@ -74,7 +74,7 @@ Edit `~/.codeium/windsurf/mcp_config.json`:
   "mcpServers": {
     "zapfetch": {
       "command": "npx",
-      "args": ["-y", "@zapfetch/mcp-server"],
+      "args": ["-y", "@zapfetchdev/mcp-server"],
       "env": { "ZAPFETCH_API_KEY": "zf-your-api-key" }
     }
   }
