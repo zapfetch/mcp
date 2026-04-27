@@ -6,7 +6,7 @@ version numbers follow [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-Planned for v0.2.0 (release pending PRs #5, #6, and tag).
+## [0.2.0] — 2026-04-27
 
 ### Added
 - **HTTP transport** — new `zapfetch-mcp-http` binary + `/mcp` + `/health`
@@ -63,5 +63,6 @@ Initial public release of the ZapFetch MCP server.
 - Dockerfile (STDIO-only at this stage).
 - CI workflow (typecheck + test + build on push / PR).
 
-[Unreleased]: https://github.com/zapfetch/mcp/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/zapfetch/mcp/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/zapfetch/mcp/releases/tag/v0.2.0
 [0.1.0]: https://github.com/zapfetch/mcp/releases/tag/v0.1.0
